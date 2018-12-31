@@ -7,20 +7,22 @@
 			body {
 			margin: 0; 
 			background-color:black;
-			color:grey;
-			text-align:center;
 			}
 			canvas { width: 100%; height: 100% }
 			#info {
 				position: absolute;
 				top: 5px; width: 100%;
 				z-index: 100;
+				color:grey;
+				text-align:center;
 			}
 			#gui {
 				position: absolute;
 				top: 5px; width: 100%;
 				z-index: 100;
+				color:grey;
 				text-align:right;
+				
 			}
 		</style>
 	</head>
@@ -67,9 +69,17 @@
   //increment gui
   var guiText = "Increment: " + trueNum;
   document.getElementsByTagName('div')[1].innerHTML = guiText;
-  
   var renderWindow = fullScreenRenderer.getRenderWindow();
+  
+  //FPS GUI
+  var fps = vtk.Interaction.UI.vtkFPSMonitor.newInstance();
+  var fpsCont = fps.getFpsMonitorContainer();
+  fpsCont.style.position = 'absolute';
+  fpsCont.style.background = 'rgba(255,255,255,0.5)';
+  fps.setContainer(document.querySelector('body'));
+  fps.setRenderWindow(renderWindow);
   renderWindow.render();
+
   
   //function to add cylinders to render
   	var addCyl = function (){
