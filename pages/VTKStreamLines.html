@@ -25,9 +25,9 @@
 <div id="info">Zoom out to see all the lines with the scroll wheel or pinched fingers.<br/>Made by Jenna Horn
 </div>
 <script>
-  //Scene and Object Setup. One Cylinder and one light.
+  //Scene Setup
   var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({background : [0,0,0],});
-  
+  //WireBox
   var box = vtk.Filters.Sources.vtkCubeSource.newInstance({ xLength: 128, yLength: 32, zLength: 64 });
   var actorP = vtk.Rendering.Core.vtkActor.newInstance();
   var mapperP = vtk.Rendering.Core.vtkMapper.newInstance();
@@ -35,9 +35,23 @@
   actorP.setMapper(mapperP);
   actorP.setPosition(64, 16, 32);
   actorP.getProperty().setRepresentationToWireframe();
-
-  var renderer = fullScreenRenderer.getRenderer();
+  //Rendering
+   var renderer = fullScreenRenderer.getRenderer();
   var windowRender = fullScreenRenderer.getRenderWindow();
+  //Axes
+  var renderWindowInteractor = vtk.Rendering.Core.vtkRenderWindowInteractor.newInstance();
+  renderWindowInteractor.setRenderWindow(windowRender);
+  var axes = vtk.Rendering.Core.vtkAxesActor.newInstance();
+  var widget = vtk.Interaction.Widgets.vtkOrientationMarkerWidget.newInstance({
+		actor: axes,
+		interactor: windowRender.getInteractor(),
+	});
+widget.setEnabled(true);
+widget.setViewportCorner(vtk.Interaction.Widgets.vtkOrientationMarkerWidget.Corners.BOTTOM_LEFT);
+widget.setViewportSize(0.15);
+widget.setMinPixelSize(100);
+widget.setMaxPixelSize(300);
+
   renderer.addActor(actorP);
   renderer.resetCamera();
   windowRender.render();
