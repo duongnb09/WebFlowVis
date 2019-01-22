@@ -56,7 +56,8 @@ circleShape.quadraticCurveTo( circleRadius, - circleRadius, 0, - circleRadius );
 circleShape.quadraticCurveTo( - circleRadius, - circleRadius, - circleRadius, 0 );
 circleShape.quadraticCurveTo( - circleRadius, circleRadius, 0, circleRadius );
 
-var light = new THREE.AmbientLight(0xffffff);
+var light = new THREE.PointLight(0xffffff);
+light.position.set(0,40,0)
 scene.add(light);
 
 var controls = new THREE.TrackballControls( camera );
@@ -124,7 +125,7 @@ var text = "83.82 21.08 35.91 83.1574 21.8289 35.8983 82.4546 22.5398 35.8848 81
 			counter = 0;
 			var draw = new THREE.CatmullRomCurve3( lineData );
 			var extrudeSettings = {
-				steps: 200,
+				steps: 400,
 				bevelEnabled: false,
 				extrudePath: draw
 			};

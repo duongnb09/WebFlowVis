@@ -61,6 +61,7 @@ var text = "83.82 21.08 35.91 83.1574 21.8289 35.8983 82.4546 22.5398 35.8848 81
 	var prevPos = 0;
 	var tempVal = 0;
 	var counter = 0;
+	var tubeID = 0;
 	for(var a = 0; a < text.length; a++){
 		if(text.charAt(a)==' ' & text.charAt(a-1)!=','){
 		    tempVal = Number(text.substring(prevPos, a));
@@ -97,15 +98,27 @@ var text = "83.82 21.08 35.91 83.1574 21.8289 35.8983 82.4546 22.5398 35.8848 81
 	    	polyData.getLines().setData(lines);
 	    	polyData.getPointData().setScalars(scalars);
   			
+			var tuber = vtk.Filters.General.vtkTubeFilter.newInstance();
+			tuber.setInputData(polyData);
+			tuber.setInputArrayToProcess(tubeID, 'Scalars', 'PointData', 'Scalars');
+			
   	    	var mapper = vtk.Rendering.Core.vtkMapper.newInstance();
-  	    	mapper.setInputData(polyData);
+  	    	mapper.setInputConnection(tuber.getOutputPort());
   		    var actor = vtk.Rendering.Core.vtkActor.newInstance();
 	    	actor.setMapper(mapper);
 		    renderer.addActor(actor);
+			
+			var mapper2 = vtk.Rendering.Core.vtkMapper.newInstance();
+  	    	mapper2.setInputData(polyData);
+  		    var actor2 = vtk.Rendering.Core.vtkActor.newInstance();
+	    	actor2.setMapper(mapper2);
+		    renderer.addActor(actor2);
 		    lineData = [];
 		    counter = 0;
+			tubeID++;
 		}
 	}
+	document.getElementsByTagName('div')[0].innerHTML = renderer.visibleActorCount();
 	renderer.resetCamera();
 	windowRender.render();
 
