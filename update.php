@@ -1,7 +1,3 @@
-<?php
-$output = shell_exec('git pull');
-//echo "<pre>$output</pre>";
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +16,13 @@ $output = shell_exec('git pull');
     <h1>Update WebFlowVis project from Github</h1>      
   </div>
 
+  <div>
+<?php
+$output = shell_exec('git pull 2>&1');
+echo "<pre>$output</pre>";
+?>
+
+   </div>
   <div class="alert alert-success">
   <strong>Success!</strong> Your WebFlowVis folder has been updated successfully.
 </div>
