@@ -1,5 +1,12 @@
 # WebFlowVis
 Web-based Framework for flow visualization
+## Split Screen with Read in Data
+### Current Version:
+1. Updated files to be split into proper files.
+1. Split screen added to compare Three and VTK directly.
+1. Slider to change how many lines to render.
+1. Organized now with JQuery format.
+
 ## VTK vs Three
 Performance and Lighting results: https://github.com/duongnb09/WebFlowVis/blob/master/Performance%20and%20Lighting%20tests.pptx  
 Three.js Flowchart: https://github.com/duongnb09/WebFlowVis/blob/master/pages/Three.pdf  
