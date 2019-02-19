@@ -1,3 +1,5 @@
+var extrudeSettings;
+var bigData = [];
 function GenerateLines(){
 	if(isfilled){
 		//Three.js
@@ -37,6 +39,7 @@ function GenerateLines(){
 		var tempVal = 0;
 		var counter = 0;
 		var counter2 = 0;
+		var lineCounter = 0;
 		var x = 0;
 		var y = 0;
 		var z = 0;
@@ -67,8 +70,10 @@ function GenerateLines(){
 				z = tempVal;
 				lineData.push(new THREE.Vector3(x,y,z));
 				var draw = new THREE.CatmullRomCurve3( lineData );
-				var extrudeSettings = {
-					steps: 400,
+				bigData[lineCounter] = draw;
+				lineCounter++;
+				extrudeSettings = {
+					steps: 40,
 					bevelEnabled: false,
 					extrudePath: draw
 				};

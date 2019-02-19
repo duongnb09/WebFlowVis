@@ -16,6 +16,7 @@
 			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
 			crossorigin="anonymous"></script>
 		<link rel="stylesheet" href="css/jquery-ui.css">
+		<script src="js/jquery.ui.touch-punch.min.js"></script>
 		<!--Three.js-->
 		<script src="js/three.js"></script>
 		<script src="js/TrackballControls.js"></script>
@@ -26,20 +27,40 @@
 		<!-- Main Scripts -->
 		<script src="js/setup.js"></script>
 		<script src="js/GenerateLines.js"></script>
+		<script src="js/Settings.js"></script>
 		<div id = 'UI'>
+			<p style="margin-right:400px;">Render Settings:</p>
 			<label for="lineText">Generated lines:</label>
 			<input type="text" id="lineText" name="lineText" />
 			<div id="lineslider"></div>
+			<p style="margin-right:400px;">Three.js Settings:</p>
+			<label for="stepText">Steps:</label>
+			<input type="text" id="stepText" name="stepText" />
+			<div id="stepslider"></div>
+			<label for="radText">Radius:</label>
+			<input type="text" id="radText" name="radText" />
+			<div id="radslider"></div>
+			Anti Alias:<input type="checkbox" id="AAText" onclick="AAfunct()">
 		</div>
 		<script>
 			var num = 3;
+			var steps = 40;
+			var radius = 10;
+			var AA = false;
 			var prevNum = num;
+			var prevSteps = 40;
+			var prevRadius = 10;
+			var prevWire = false;
 			var ischanging = false;
+			var ischanging2 = false;
+			var ischanging3 = false;
 			var isfilled = false;
 			$(UI).innerHeight(window.innerHeight);
 			//$(UI).innerWidth(window.innerWidth/5);
 			$(UI).innerWidth(window.innerWidth/3);
 			$( "#lineText" ).val( 3 );
+			$( "#stepText" ).val( 40 );
+			$( "#radText" ).val( 10 );
 			$(function(){
 				$( "#lineslider" ).slider({
 					range: "max",
@@ -52,6 +73,41 @@
 					}
 				});
 			} );
+			$(function(){
+				$( "#stepslider" ).slider({
+					range: "max",
+					min: 10,
+					max: 500,
+					value: 40,
+					slide: function( event, ui ) {
+						$( "#stepText" ).val( ui.value );
+						steps = ui.value;
+					}
+				});
+			} );
+			$(function(){
+				$( "#radslider" ).slider({
+					range: "max",
+					min: 1,
+					max: 100,
+					value: 10,
+					slide: function( event, ui ) {
+						$( "#radText" ).val( ui.value );
+						radius = ui.value;
+					}
+				});
+			} );
+			function AAfunct(){
+				AA = !AA;
+				if(AA){
+					renderer.setPixelRatio( window.devicePixelRatio*2);
+					console.log("better");
+				}
+				else{
+					renderer.setPixelRatio( window.devicePixelRatio);
+				}
+			};
+
 			GenerateLines();
 			var generateLoop = setInterval(function(){
 				if(ischanging & num == prevNum){
@@ -62,7 +118,24 @@
 					ischanging = true;
 				}
 				prevNum = num;
-			}, 500);
+				if(ischanging2 & steps == prevSteps){
+					ischanging2 = false;
+					SettingThreeSteps();
+				}
+				else if(steps != prevSteps){
+					ischanging2 = true;
+				}
+				prevSteps = steps;
+				if(ischanging3 & radius == prevRadius){
+					ischanging3 = false;
+					circleRadius = radius/10;
+					SettingThreeRadius();
+				}
+				else if(radius != prevRadius){
+					ischanging3 = true;
+				}
+				prevRadius = radius;
+			}, 50);
 		</script>
 	</body>
 </html>
