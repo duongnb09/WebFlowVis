@@ -1,8 +1,7 @@
 var three = $("<div id = 'three'></div>");
 $("body").append(three);
 $(three).innerHeight(window.innerHeight);
-//$(three).innerWidth((2*window.innerWidth)/5);
-$(three).innerWidth(window.innerWidth/3);
+$(three).innerWidth(window.innerWidth*.8);
 var taxis = $("<div id = 'inset'></div>");
 $("body").append(taxis);
 
@@ -13,15 +12,14 @@ stats = new Stats();
 container.appendChild( stats.dom );
 //Scene Setup
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth/3)/window.innerHeight, 0.1, 1000 );
+var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth*.8)/window.innerHeight, 0.1, 1000 );
 var renderer = new THREE.WebGLRenderer();
-//renderer.setSize( (2*window.innerWidth)/5, window.innerHeight );
 renderer.setPixelRatio( window.devicePixelRatio);
-renderer.setSize( (window.innerWidth)/3, window.innerHeight );
+renderer.setSize( window.innerWidth*.8, window.innerHeight );
 scene.background = new THREE.Color('white');
 container.appendChild( renderer.domElement );
 
-var circleRadius = 1;
+var circleRadius = .01;
 var circleShape = new THREE.Shape();
 circleShape.moveTo( 0, circleRadius );
 circleShape.quadraticCurveTo( circleRadius, circleRadius, circleRadius, 0 );
@@ -43,7 +41,7 @@ controls.enableKeys = false;
 var axes = document.getElementById( 'inset' );
 var renderer2 = new THREE.WebGLRenderer();
 renderer2.setClearColor( 0x000000, 1 );
-renderer2.setSize( 50, 50 );
+renderer2.setSize( 100, 100 );
 axes.appendChild( renderer2.domElement );
 var scene2 = new THREE.Scene();
 var camera2 = new THREE.PerspectiveCamera( 50, 1, 1, 1000 );
@@ -52,13 +50,13 @@ var axesHelper = new THREE.AxesHelper( 5 );
 scene2.add( axesHelper );
 
 //box
-var geometry = new THREE.BoxGeometry( 128, 32, 64);
+var geometry = new THREE.BoxGeometry( 12.8, 3.2, 6.4);
 var edge = new THREE.EdgesGeometry( geometry );
 var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2 } );
 var wireframe = new THREE.LineSegments( edge, mat );
 scene.add( wireframe );
 
-camera.position.set( 0, 0, 200);
+camera.position.set( 0, 0, 2);
 controls.update();
 
 var animate = function () {
@@ -73,48 +71,4 @@ var animate = function () {
 	stats.end();
 	renderer2.render( scene2, camera2 );
 };
-$("body").append($("<p>Works</p>"));
 animate();
-
-//-----VTK.js-----//
-//Scene Setup
-var fullScreenRenderer = vtk.Rendering.Misc.vtkFullScreenRenderWindow.newInstance({background : [1,1,1],});
-//WireBox
-var box = vtk.Filters.Sources.vtkCubeSource.newInstance({ xLength: 128, yLength: 32, zLength: 64 });
-var actorP = vtk.Rendering.Core.vtkActor.newInstance();
-var mapperP = vtk.Rendering.Core.vtkMapper.newInstance();
-mapperP.setInputConnection(box.getOutputPort());
-actorP.setMapper(mapperP);
-actorP.setPosition(64, 16, 32);
-actorP.getProperty().setRepresentationToWireframe();
-//Rendering
-var renderervtk = fullScreenRenderer.getRenderer();
-var windowRender = fullScreenRenderer.getRenderWindow();
-//Axes
-var renderWindowInteractor = vtk.Rendering.Core.vtkRenderWindowInteractor.newInstance();
-renderWindowInteractor.setRenderWindow(windowRender);
-var axes = vtk.Rendering.Core.vtkAxesActor.newInstance();
-var widget = vtk.Interaction.Widgets.vtkOrientationMarkerWidget.newInstance({
-	actor: axes,
-	interactor: windowRender.getInteractor(),
-});
-widget.setEnabled(true);
-widget.setViewportCorner(vtk.Interaction.Widgets.vtkOrientationMarkerWidget.Corners.BOTTOM_LEFT);
-widget.setViewportSize(0.15);
-widget.setMinPixelSize(100);
-widget.setMaxPixelSize(300);
-
-renderervtk.addActor(actorP);
-renderervtk.resetCamera();
-windowRender.render();
-  
-//FPS GUI
-var fps = vtk.Interaction.UI.vtkFPSMonitor.newInstance();
-var fpsCont = fps.getFpsMonitorContainer();
-fpsCont.style.position = 'absolute';
-fpsCont.style.margin = ((2*window.innerWidth)/5).toString + " px";
-fpsCont.style.color = 'black';
-fpsCont.style.background = 'rgba(255,255,255,0.5)';
-fps.setContainer(document.querySelector('body'));
-fps.setRenderWindow(windowRender);
-windowRender.render();
