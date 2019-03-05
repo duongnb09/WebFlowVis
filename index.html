@@ -2,7 +2,7 @@
 <html>
 	<!--Three.js Line Renders. By Jenna Horn-->
 	<head>
-		<title>3D Vector Visualization</title>
+		<title>Surface Visualization</title>
 		<link rel="stylesheet" href="css/stylesheet.css">
 	</head>
 	<body>
@@ -16,11 +16,11 @@
 			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
 			crossorigin="anonymous"></script>
 		<link rel="stylesheet" href="css/jquery-ui.css">
-		<script src="js/jquery.ui.touch-punch.min.js"></script>
 		<!--Three.js-->
 		<script src="js/three.js"></script>
 		<script src="js/TrackballControls.js"></script>
 		<script src="js/stats.min.js"></script>
+		<script src="js/OBJLoader.js"></script>
 		<!-- Main Scripts -->
 		<script src="js/setup.js"></script>
 		<script src="js/GenerateCurves.js"></script>
@@ -29,9 +29,14 @@
 		<div id='data'></div>
 		<div id = 'UI'>
 			<p style="margin-right:400px;">Render Settings:</p>
-			<label for="lineText">Generated lines:</label>
-			<input type="text" id="lineText" name="lineText" />
-			<div id="lineslider"></div>
+			<label for="TText">Transparency:</label>
+			<input type="text" id="TText" name="TText" />
+			<div id="Tslider"></div>
+			
+			<label for="HText">Color:</label>
+			<input type="text" id="HText" name="HText" />
+			<div id="Hslider"></div>
+			<div id= 'console' >test4</div>
 		</div>
 		<script>
 			GenerateCurves("data/seeding_curve_1.txt");
@@ -41,33 +46,62 @@
 			AddObject("data/surface1_2.obj");
 			AddObject("data/surface2_1.obj");
 			AddObject("data/surface2_2.obj");
-			var num = 3;
+			var num = .5;
 			var prevNum = num;
 			var ischanging = false;
-			var isfilled = false;
+			var num2 = .5;
+			var prevNum2 = num2;
+			var ischanging2 = false;
 			$(UI).innerHeight(window.innerHeight);
 			$(UI).innerWidth(window.innerWidth/5);
-			$( "#lineText" ).val( 3 );
+			//Transparency
+			$( "#TText" ).val( 50 );
 			$(function(){
-				$( "#lineslider" ).slider({
+				$( "#Tslider" ).slider({
 					range: "max",
 					min: 1,
-					max: 20,
-					value: 3,
+					max: 100,
+					value: 50,
 					slide: function( event, ui ) {
-						$( "#lineText" ).val( ui.value );
+						$( "#TText" ).val( ui.value );
 						num = ui.value;
 					}
 				});
 			} );
+			//Hue
+			$( "#HText" ).val( 50 );
+			$(function(){
+				$( "#Hslider" ).slider({
+					range: "max",
+					min: 1,
+					max: 100,
+					value: 50,
+					slide: function( event, ui ) {
+						$( "#HText" ).val( ui.value );
+						num2 = ui.value;
+					}
+				});
+			} );
+			
 			var generateLoop = setInterval(function(){
+				//Transparency
 				if(ischanging & num == prevNum){
 					ischanging = false;
+					Transparency(num/100);
 				}
 				else if(num != prevNum){
 					ischanging = true;
 				}
+				// Hue
+				if(ischanging2 & num2 == prevNum2){
+					ischanging2 = false;
+					Hue(num2/100);
+				}
+				else if(num2 != prevNum2){
+					ischanging2 = true;
+				}
 				prevNum = num;
+				prevNum2 = num2;
 			}, 50);
 		</script>
 	</body>

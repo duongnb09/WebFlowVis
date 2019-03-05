@@ -1,29 +1,25 @@
-function SettingThreeRadius(){
-	var counter = 0;
-	for(var i = 0; i < scene.children.length; i++){
-		var obj = scene.children[i];
-		if( obj.name == "mesh"){
-			circleShape = new THREE.Shape();
-			circleShape.moveTo( 0, circleRadius );
-			circleShape.quadraticCurveTo( circleRadius, circleRadius, circleRadius, 0 );
-			circleShape.quadraticCurveTo( circleRadius, - circleRadius, 0, - circleRadius );
-			circleShape.quadraticCurveTo( - circleRadius, - circleRadius, - circleRadius, 0 );
-			circleShape.quadraticCurveTo( - circleRadius, circleRadius, 0, circleRadius );
-			extrudeSettings.extrudePath = bigData[counter];
-			counter++;
-			obj.geometry = new THREE.ExtrudeBufferGeometry( circleShape, extrudeSettings );
-		}
+function Transparency(num){
+	var arr = scene.children;
+	for( var x = 0; x < arr.length; x++){
+		var object = arr[x];
+		object.traverse( function ( child ) {
+        	if ( child instanceof THREE.Mesh ) {
+            	//child.material.side = THREE.BackSide;
+            	//child.material.color.setHex(0x808080);
+				child.material.transparent = true;
+				child.material.opacity = num;
+        	}
+    	});
 	}
 };
-function SettingThreeSteps(){
-	var counter = 0;
-	for(var i = 0; i < scene.children.length; i++){
-		var obj = scene.children[i];
-		if( obj.name == "mesh"){
-			extrudeSettings.steps = steps;
-			extrudeSettings.extrudePath = bigData[counter];
-			counter++;
-			obj.geometry = new THREE.ExtrudeBufferGeometry( circleShape, extrudeSettings );
-		}
+function Hue(num){
+	var arr = scene.children;
+	for( var x = 0; x < arr.length; x++){
+		var object = arr[x];
+		object.traverse( function ( child ) {
+        	if ( child instanceof THREE.Mesh ) {
+            	child.material.color.setHSL(num, 1, .5);
+        	}
+    	});
 	}
 };
