@@ -36,7 +36,12 @@
 			<label for="HText">Color:</label>
 			<input type="text" id="HText" name="HText" />
 			<div id="Hslider"></div>
-			<div id= 'console' >test4</div>
+			
+			<label for="LText">Light Location:</label>
+			<input type="text" id="LText" name="LText" />
+			<div id="Lslider"></div>
+			
+			<div id= 'console' >test2</div>
 		</div>
 		<script>
 			GenerateCurves("data/seeding_curve_1.txt");
@@ -46,14 +51,23 @@
 			AddObject("data/surface1_2.obj");
 			AddObject("data/surface2_1.obj");
 			AddObject("data/surface2_2.obj");
+			
+			//Transparency
 			var num = .5;
 			var prevNum = num;
 			var ischanging = false;
+			//Hue
 			var num2 = .5;
 			var prevNum2 = num2;
 			var ischanging2 = false;
+			//Light
+			var num3 = .5;
+			var prevNum3 = num3;
+			var ischanging3 = false;
+			
 			$(UI).innerHeight(window.innerHeight);
 			$(UI).innerWidth(window.innerWidth/5);
+			
 			//Transparency
 			$( "#TText" ).val( 50 );
 			$(function(){
@@ -82,6 +96,20 @@
 					}
 				});
 			} );
+			//Light
+			$( "#LText" ).val( 0 );
+			$(function(){
+				$( "#Lslider" ).slider({
+					range: "max",
+					min: -10,
+					max: 10,
+					value: 0,
+					slide: function( event, ui ) {
+						$( "#LText" ).val( ui.value );
+						num3 = ui.value;
+					}
+				});
+			} );
 			
 			var generateLoop = setInterval(function(){
 				//Transparency
@@ -100,8 +128,17 @@
 				else if(num2 != prevNum2){
 					ischanging2 = true;
 				}
+				//Light
+				if(ischanging3 & num3 == prevNum3){
+					ischanging3 = false;
+					Light(num3);
+				}
+				else if(num3 != prevNum3){
+					ischanging3 = true;
+				}
 				prevNum = num;
 				prevNum2 = num2;
+				prevNum3 = num3;
 			}, 50);
 		</script>
 	</body>
