@@ -10,12 +10,10 @@
 		<script src="https://code.jquery.com/jquery-3.3.1.min.js"
 				integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 				crossorigin="anonymous"></script>
-		<!--JQuery UI-->
-		<script
-			src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-			integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-			crossorigin="anonymous"></script>
-		<link rel="stylesheet" href="css/jquery-ui.css">
+		<!--Bootstrap-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 		<!--Three.js-->
 		<script src="js/three.js"></script>
 		<script src="js/TrackballControls.js"></script>
@@ -29,19 +27,22 @@
 		<div id='data'></div>
 		<div id = 'UI'>
 			<p style="margin-right:400px;">Render Settings:</p>
-			<label for="TText">Transparency:</label>
+			<!--<label for="TText">Transparency:</label>
 			<input type="text" id="TText" name="TText" />
-			<div id="Tslider"></div>
-			
-			<label for="HText">Color:</label>
-			<input type="text" id="HText" name="HText" />
-			<div id="Hslider"></div>
-			
-			<label for="LText">Light Location:</label>
-			<input type="text" id="LText" name="LText" />
-			<div id="Lslider"></div>
-			
-			<div id= 'console' >test2</div>
+			<div id="Tslider"></div>-->
+			<label for="TText">Transparency:  </label>
+			<form class="range-field">
+				<input id="TText" class="no-border" type="range" value="50" min="0" max="100" />
+			</form>
+			<label for="HText">Color:  </label>
+			<form class="range-field">
+				<input id="HText" class="no-border" type="range" value="50" min="0" max="100" />
+			</form>
+			<label for="LText">Light Location:  </label>
+			<form class="range-field">
+				<input id="LText" class="no-border" type="range" value="0" min="-10" max="10" />
+			</form>
+			<div id= 'console' >test</div>
 		</div>
 		<script>
 			GenerateCurves("data/seeding_curve_1.txt");
@@ -53,93 +54,33 @@
 			AddObject("data/surface2_2.obj");
 			
 			//Transparency
-			var num = .5;
-			var prevNum = num;
-			var ischanging = false;
+			var num = 50;
 			//Hue
-			var num2 = .5;
-			var prevNum2 = num2;
-			var ischanging2 = false;
+			var num2 = 50;
 			//Light
-			var num3 = .5;
-			var prevNum3 = num3;
-			var ischanging3 = false;
+			var num3 = 50;
 			
 			$(UI).innerHeight(window.innerHeight);
 			$(UI).innerWidth(window.innerWidth/5);
 			
 			//Transparency
-			$( "#TText" ).val( 50 );
-			$(function(){
-				$( "#Tslider" ).slider({
-					range: "max",
-					min: 1,
-					max: 100,
-					value: 50,
-					slide: function( event, ui ) {
-						$( "#TText" ).val( ui.value );
-						num = ui.value;
-					}
-				});
-			} );
+			var Tslider = $("#TText");
+			Tslider.on("input change", function(e) {
+				num = $(this).val();
+				Transparency(num/100);
+			})
 			//Hue
-			$( "#HText" ).val( 50 );
-			$(function(){
-				$( "#Hslider" ).slider({
-					range: "max",
-					min: 1,
-					max: 100,
-					value: 50,
-					slide: function( event, ui ) {
-						$( "#HText" ).val( ui.value );
-						num2 = ui.value;
-					}
-				});
-			} );
+			var Hslider = $("#HText");
+			Hslider.on("input change", function(e) {
+				num2 = $(this).val();
+				Hue(num2/100);
+			})
 			//Light
-			$( "#LText" ).val( 0 );
-			$(function(){
-				$( "#Lslider" ).slider({
-					range: "max",
-					min: -10,
-					max: 10,
-					value: 0,
-					slide: function( event, ui ) {
-						$( "#LText" ).val( ui.value );
-						num3 = ui.value;
-					}
-				});
-			} );
-			
-			var generateLoop = setInterval(function(){
-				//Transparency
-				if(ischanging & num == prevNum){
-					ischanging = false;
-					Transparency(num/100);
-				}
-				else if(num != prevNum){
-					ischanging = true;
-				}
-				// Hue
-				if(ischanging2 & num2 == prevNum2){
-					ischanging2 = false;
-					Hue(num2/100);
-				}
-				else if(num2 != prevNum2){
-					ischanging2 = true;
-				}
-				//Light
-				if(ischanging3 & num3 == prevNum3){
-					ischanging3 = false;
-					Light(num3);
-				}
-				else if(num3 != prevNum3){
-					ischanging3 = true;
-				}
-				prevNum = num;
-				prevNum2 = num2;
-				prevNum3 = num3;
-			}, 50);
+			var Lslider = $("#LText");
+			Lslider.on("input change", function(e) {
+				num3 = $(this).val();
+				Light(num3);
+			})
 		</script>
 	</body>
 </html>
