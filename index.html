@@ -19,6 +19,8 @@
 		<script src="js/TrackballControls.js"></script>
 		<script src="js/stats.min.js"></script>
 		<script src="js/OBJLoader.js"></script>
+		<script src="js/CubeTextureLoader.js"></script>
+		<script src="js/TextureLoader.js"></script>
 		<!-- Main Scripts -->
 		<script src="js/setup.js"></script>
 		<script src="js/GenerateCurves.js"></script>
@@ -26,10 +28,19 @@
 		<script src="js/Settings.js"></script> 
 		<div id='data'></div>
 		<div id = 'UI'>
-			<p style="margin-right:400px;">Render Settings:</p>
-			<!--<label for="TText">Transparency:</label>
-			<input type="text" id="TText" name="TText" />
-			<div id="Tslider"></div>-->
+			<p>Render Settings:</p>
+			<label for="Material">Material Type:</label>
+			<div class="btn-group btn-group-toggle" data-toggle="buttons">
+				<label class="btn btn-secondary active" id = "phong">
+					<input type="radio" name="options" id="option1" autocomplete="off" checked> Phong
+				</label>
+				<label class="btn btn-secondary" id = "basic">
+					<input type="radio" name="options" id="option2" autocomplete="off"> Basic
+				</label>
+				<label class="btn btn-secondary" id = "lam" >
+					<input type="radio" name="options" id="option3" autocomplete="off"> Lambert
+				</label>
+			</div>
 			<label for="TText">Transparency:  </label>
 			<form class="range-field">
 				<input id="TText" class="no-border" type="range" value="50" min="0" max="100" />
@@ -42,7 +53,28 @@
 			<form class="range-field">
 				<input id="LText" class="no-border" type="range" value="0" min="-10" max="10" />
 			</form>
-			<div id= 'console' >test</div>
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" value="" id="texture">
+				<label class="form-check-label" for="texture">
+					Load Textures(WIP):
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" value="" id="shadow">
+				<label class="form-check-label" for="shadow">
+					Cast Shadows:
+				</label>
+			</div>
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" value="" id="reflect">
+				<label class="form-check-label" for="reflect">
+					Reflective:
+				</label>
+			</div>
+			<div role="status" id = "loading">
+				<span class="sr-only">Loading...</span>
+			</div>
+			<div id= 'console' ></div>
 		</div>
 		<script>
 			GenerateCurves("data/seeding_curve_1.txt");
@@ -63,6 +95,19 @@
 			$(UI).innerHeight(window.innerHeight);
 			$(UI).innerWidth(window.innerWidth/5);
 			
+			//Material
+			var PMesh = $("#phong");
+			PMesh.on("click", function(e) {
+				Material(0);
+			})
+			var BMesh = $("#basic");
+			BMesh.on("click", function(e) {
+				Material(1);
+			})
+			var LMesh = $("#lam");
+			LMesh.on("click", function(e) {
+				Material(2);
+			})
 			//Transparency
 			var Tslider = $("#TText");
 			Tslider.on("input change", function(e) {
@@ -80,6 +125,30 @@
 			Lslider.on("input change", function(e) {
 				num3 = $(this).val();
 				Light(num3);
+			})
+			//Texture
+			var Txture = $("#texture");
+			var txtBool = false;
+			Txture.change(function(e) {
+				txtBool = !txtBool;
+				console.log("Texture");
+				Texture(txtBool);
+			})
+			//Shadow
+			var Shad = $("#shadow");
+			var shadBool = false;
+			Shad.change(function(e) {
+				shadBool = !shadBool;
+				console.log("shadow");
+				Shadow(shadBool);
+			})
+			//Reflective
+			var Reflex = $("#reflect");
+			var reBool = false;
+			Reflex.change(function(e) {
+				reBool = !reBool;
+				console.log("Reflect");
+				Reflection(reBool);
 			})
 		</script>
 	</body>

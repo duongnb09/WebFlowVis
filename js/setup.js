@@ -1,3 +1,5 @@
+var loading = false;
+
 var three = $("<div id = 'three'></div>");
 $("body").append(three);
 $(three).innerHeight(window.innerHeight);
@@ -16,6 +18,10 @@ var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth*.8)/window.inne
 var renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio( window.devicePixelRatio);
 renderer.setSize( window.innerWidth*.8, window.innerHeight );
+renderer.shadowMap.enabled = true;
+renderer.shadowMapSoft = true;
+renderer.gammaInput = true;
+renderer.gammaOutput = true;
 scene.background = new THREE.Color('white');
 container.appendChild( renderer.domElement );
 
@@ -27,18 +33,20 @@ circleShape.quadraticCurveTo( circleRadius, - circleRadius, 0, - circleRadius );
 circleShape.quadraticCurveTo( - circleRadius, - circleRadius, - circleRadius, 0 );
 circleShape.quadraticCurveTo( - circleRadius, circleRadius, 0, circleRadius );
 
-var geometryP = new THREE.PlaneGeometry( 200,200);
-var materialP = new THREE.MeshPhongMaterial( { color: 0xffffff, dithering: true } );
+var geometryP = new THREE.PlaneGeometry(9,9);
+var materialP = new THREE.MeshPhongMaterial( { color: 0x888888, dithering: true } );
+materialP.transparent = true;
 var plane = new THREE.Mesh( geometryP, materialP );
-plane.position.set(0, -5, 0);
-plane.rotation.set(-90,0,0);
+plane.position.set(0, 0, -1);
 plane.receiveShadow = true;
 scene.add( plane );
+materialP.opacity = 0;
 
 var light = new THREE.AmbientLight(0x777777);
 scene.add(light);
 var light2 = new THREE.PointLight(0xffffff);
-light2.position.set(0,-10,0)
+light2.position.set(0,-10,10);
+light2.castShadow = true;
 scene.add(light2);
 
 var controls = new THREE.TrackballControls( camera, document.getElementById("three"));
@@ -57,16 +65,23 @@ var axesHelper = new THREE.AxesHelper( 5 );
 scene2.add( axesHelper );
 
 //box
-var geometry = new THREE.BoxGeometry( 12.8, 3.2, 6.4);
+var geometry = new THREE.BoxGeometry( 10, 5, 10);
 var edge = new THREE.EdgesGeometry( geometry );
 var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2 } );
 var wireframe = new THREE.LineSegments( edge, mat );
+wireframe.name = "plane";
 scene.add( wireframe );
 
 camera.position.set( 0, 0, 2);
 controls.update();
 
 var animate = function () {
+	if(loading){
+		$("#loading").addClass('spinner-border');
+	}
+	else{
+		$("#loading").removeClass('spinner-border');
+	}
 	requestAnimationFrame( animate );
 	controls.update();
 	camera2.position.copy( camera.position );

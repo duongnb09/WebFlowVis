@@ -3,24 +3,30 @@ function AddObject(name2){
 	loader.load(name2, function ( object ) {
     	object.traverse( function ( child ) {
         	if ( child instanceof THREE.Mesh ) {
-				console.log("found mesh");
-            	child.material.side = THREE.DoubleSide;
+            	child.material.side = THREE.BackSide;
             	child.material.color.setHex(0x808080);
 				child.material.transparent = true;
 				child.material.opacity = .5;
+				child.recieveShadow = true;
         	}
 			else{
 				var temp = object;
-				object = new THREE.Mesh( temp, new THREE.MeshPhongMaterial( { color: 0xffffff, dithering: true } ));
+				if ( child instanceof THREE.LineSegments ) {
+					console.log("found");
+				}
+				//object = new THREE.Mesh( temp, new THREE.MeshPhongMaterial( { color: 0xffffff, dithering: true } ));
 			}
     	} );
-		object.rotation.set(-90,0,0);
-		scene.add( object );},
+		object.name = "surface";
+		scene.add( object );
+		loading = false;
+		},
 	function ( xhr ) {
-		
+		loading = true;
 	},
 	function ( error ) {
 		alert( 'An error happened' );
 	}
 	);
+	//$("#loading").removeClass('spinner-border');
 };
