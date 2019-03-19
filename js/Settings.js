@@ -61,7 +61,7 @@ function Texture(bool){
 	var arr = scene.children;
 	var loader = new THREE.TextureLoader();
 	loader.load(
-	"data/graniteTXT.jpg",
+	"data/skybox/px.jpg",
 	function ( texture ) {
 		texture.repeat.set(.01,.01); 
 		texture.wrapS = THREE.RepeatWrapping;
