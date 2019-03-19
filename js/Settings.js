@@ -65,7 +65,7 @@ function Texture(bool){
 	function ( texture ) {
 		texture.wrapS = THREE.RepeatWrapping;
 		texture.wrapT = THREE.RepeatWrapping;
-		texture.repeat.set(100,100); 
+		texture.repeat.set(300,300); 
 		for( var x = 0; x < arr.length; x++){
 			var object = arr[x];
 			object.traverse( function ( child ) {
