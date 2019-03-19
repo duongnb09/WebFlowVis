@@ -40,6 +40,7 @@ materialP.transparent = true;
 var plane = new THREE.Mesh( geometryP, materialP );
 plane.position.set(0, 0, -1);
 plane.receiveShadow = true;
+plane.name = "surface";
 scene.add( plane );
 materialP.opacity = 0;
 
