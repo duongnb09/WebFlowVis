@@ -58,17 +58,30 @@ function Material(num){
 };
 function Texture(bool){
 	var arr = scene.children;
-	var textureMap = new THREE.TextureLoader().load( 'textures/UV_Grid_Sm.jpg' );
-	textureMap.wrapS = textureMap.wrapT = THREE.RepeatWrapping;
-	textureMap.anisotropy = 16;
-	for( var x = 0; x < arr.length; x++){
-		var object = arr[x];
-		object.traverse( function ( child ) {
-        	if ( child instanceof THREE.Mesh & object.name == "surface") {
-            	texturedMaterial = new THREE.MeshPhongMaterial( { color: materialColor, map: textureMap, side: THREE.DoubleSide } );
-        	}
-    	});
+	var loader = new THREE.TextureLoader();
+	loader.load(
+	"data/graniteTXT.jpg",
+	function ( texture ) {
+		texture.format = THREE.RGBFormat;
+		for( var x = 0; x < arr.length; x++){
+			var object = arr[x];
+			object.traverse( function ( child ) {
+				if ( child instanceof THREE.Mesh & object.name == "surface") {
+					if(child.material.map == null)
+						child.material.map = texture;
+					else
+						child.material.map = null;
+				}
+			});
+		}
 	}
+	,
+	undefined,
+	function ( err ) {
+		console.error( 'An error happened.' );
+	}
+);
+
 };
 function Shadow(bool){
 	var arr = scene.children;

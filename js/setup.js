@@ -18,6 +18,7 @@ var camera = new THREE.PerspectiveCamera( 75, (window.innerWidth*.8)/window.inne
 var renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio( window.devicePixelRatio);
 renderer.setSize( window.innerWidth*.8, window.innerHeight );
+renderer.shadowMapType = THREE.PCFSoftShadowMap;
 renderer.shadowMap.enabled = true;
 renderer.shadowMapSoft = true;
 renderer.gammaInput = true;
@@ -47,6 +48,8 @@ scene.add(light);
 var light2 = new THREE.PointLight(0xffffff);
 light2.position.set(0,-10,10);
 light2.castShadow = true;
+light2.shadowMapWidth = 2048;
+light2.shadowMapHeight = 2048; 
 scene.add(light2);
 
 var controls = new THREE.TrackballControls( camera, document.getElementById("three"));
