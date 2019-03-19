@@ -51,6 +51,7 @@ function Material(num){
             	child.material.color = new THREE.Color(oldMat.color);
 				child.material.transparent = true;
 				child.material.opacity = oldMat.opacity;
+				child.material.map = oldMat.map;
         	}
     	});
 	}
@@ -62,7 +63,9 @@ function Texture(bool){
 	loader.load(
 	"data/graniteTXT.jpg",
 	function ( texture ) {
-		texture.format = THREE.RGBFormat;
+		texture.repeat.set(.01,.01); 
+		texture.wrapS = THREE.RepeatWrapping;
+		texture.wrapT = THREE.RepeatWrapping;
 		for( var x = 0; x < arr.length; x++){
 			var object = arr[x];
 			object.traverse( function ( child ) {
@@ -71,6 +74,7 @@ function Texture(bool){
 						child.material.map = texture;
 					else
 						child.material.map = null;
+					child.material.needsUpdate = true;
 				}
 			});
 		}
