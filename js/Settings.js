@@ -63,9 +63,9 @@ function Texture(bool){
 	loader.load(
 	"data/skybox/px.jpg",
 	function ( texture ) {
-		texture.repeat.set(.04,.04); 
 		texture.wrapS = THREE.RepeatWrapping;
 		texture.wrapT = THREE.RepeatWrapping;
+		texture.repeat.set(100,100); 
 		for( var x = 0; x < arr.length; x++){
 			var object = arr[x];
 			object.traverse( function ( child ) {
