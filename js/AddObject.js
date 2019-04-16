@@ -1,4 +1,4 @@
-function AddObject(name2){
+function AddObject(name2, surface){
 	var loader = new THREE.OBJLoader();
 	loader.load(name2, function ( object ) {
     	object.traverse( function ( child ) {
@@ -7,7 +7,9 @@ function AddObject(name2){
             	child.material.color.setHex(0x808080);
 				child.material.transparent = true;
 				child.material.opacity = .5;
-				child.recieveShadow = true;
+				child.recieveShadow = false;
+				child.name = name2;
+				surface.updateMesh(child);
         	}
 			else{
 				var temp = object;
@@ -17,8 +19,6 @@ function AddObject(name2){
 				//object = new THREE.Mesh( temp, new THREE.MeshPhongMaterial( { color: 0xffffff, dithering: true } ));
 			}
     	} );
-		object.name = "surface";
-		scene.add( object );
 		loading = false;
 		},
 	function ( xhr ) {

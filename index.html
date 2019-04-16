@@ -17,15 +17,18 @@
 		<!--Three.js-->
 		<script src="js/three.js"></script>
 		<script src="js/TrackballControls.js"></script>
+		<script src="js/DragControls.js"></script>
 		<script src="js/stats.min.js"></script>
 		<script src="js/OBJLoader.js"></script>
 		<script src="js/CubeTextureLoader.js"></script>
 		<script src="js/TextureLoader.js"></script>
+		<script src="js/Object3D.js"></script> 
 		<!-- Main Scripts -->
-		<script src="js/setup.js"></script>
+		<script src="js/Object.js"></script> 
 		<script src="js/GenerateCurves.js"></script>
 		<script src="js/AddObject.js"></script>
 		<script src="js/Settings.js"></script> 
+		<script src="js/setup.js"></script>
 		<div id='data'></div>
 		<div id = 'UI'>
 			<p>Render Settings:</p>
@@ -71,20 +74,13 @@
 					Reflective:
 				</label>
 			</div>
+			<button type="button" class="btn btn-primary btn-lg btn-block" id="reset">Reset Position</button>
 			<div role="status" id = "loading">
 				<span class="sr-only">Loading...</span>
 			</div>
-			<div id= 'console' >test2</div>
+			<div id= 'console' >test</div>
 		</div>
 		<script>
-			GenerateCurves("data/seeding_curve_1.txt");
-			GenerateCurves("data/seeding_curve_2.txt");
-			AddObject("data/outerbox.obj");
-			AddObject("data/surface1_1.obj");
-			AddObject("data/surface1_2.obj");
-			AddObject("data/surface2_1.obj");
-			AddObject("data/surface2_2.obj");
-			
 			//Transparency
 			var num = 50;
 			//Hue
@@ -98,27 +94,27 @@
 			//Material
 			var PMesh = $("#phong");
 			PMesh.on("click", function(e) {
-				Material(0);
+				surf1.material(0);
 			})
 			var BMesh = $("#basic");
 			BMesh.on("click", function(e) {
-				Material(1);
+				surf1.material(1);
 			})
 			var LMesh = $("#lam");
 			LMesh.on("click", function(e) {
-				Material(2);
+				surf1.material(2);
 			})
 			//Transparency
 			var Tslider = $("#TText");
 			Tslider.on("input change", function(e) {
 				num = $(this).val();
-				Transparency(num/100);
+				surf1.transparency(num/100); 
 			})
 			//Hue
 			var Hslider = $("#HText");
 			Hslider.on("input change", function(e) {
 				num2 = $(this).val();
-				Hue(num2/100);
+				surf1.color(num2/100);
 			})
 			//Light
 			var Lslider = $("#LText");
@@ -131,24 +127,27 @@
 			var txtBool = false;
 			Txture.change(function(e) {
 				txtBool = !txtBool;
-				console.log("Texture");
-				Texture(txtBool);
+				surf1.texture(txtBool);
 			})
 			//Shadow
 			var Shad = $("#shadow");
 			var shadBool = false;
 			Shad.change(function(e) {
 				shadBool = !shadBool;
-				console.log("shadow");
-				Shadow(shadBool);
+				surf1.shadow(shadBool);
 			})
 			//Reflective
 			var Reflex = $("#reflect");
 			var reBool = false;
 			Reflex.change(function(e) {
 				reBool = !reBool;
-				console.log("Reflect");
-				Reflection(reBool);
+				surf1.reflective(reBool, scene);
+			})
+			//reset
+			var Reset = $("#reset");
+			Reset.click(function(e) {
+				console.log("click");
+				surf1.position(0,0,0);
 			})
 		</script>
 	</body>

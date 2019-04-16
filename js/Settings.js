@@ -61,11 +61,11 @@ function Texture(bool){
 	var arr = scene.children;
 	var loader = new THREE.TextureLoader();
 	loader.load(
-	"data/skybox/px.jpg",
+	"data/graniteTXT.jpg",
 	function ( texture ) {
+		texture.repeat.set(.01,.01); 
 		texture.wrapS = THREE.RepeatWrapping;
 		texture.wrapT = THREE.RepeatWrapping;
-		texture.repeat.set(1,1); 
 		for( var x = 0; x < arr.length; x++){
 			var object = arr[x];
 			object.traverse( function ( child ) {
