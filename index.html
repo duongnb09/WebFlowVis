@@ -1,154 +1,224 @@
 <!DOCTYPE html>
 <html>
-	<!--Three.js Line Renders. By Jenna Horn-->
-	<head>
-		<title>Surface Visualization</title>
-		<link rel="stylesheet" href="css/stylesheet.css">
-	</head>
-	<body>
-		<!--JQuery-->
-		<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-				integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-				crossorigin="anonymous"></script>
-		<!--Bootstrap-->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-		<!--Three.js-->
-		<script src="js/three.js"></script>
-		<script src="js/TrackballControls.js"></script>
-		<script src="js/DragControls.js"></script>
-		<script src="js/stats.min.js"></script>
-		<script src="js/OBJLoader.js"></script>
-		<script src="js/CubeTextureLoader.js"></script>
-		<script src="js/TextureLoader.js"></script>
-		<script src="js/Object3D.js"></script> 
-		<!-- Main Scripts -->
-		<script src="js/Object.js"></script> 
-		<script src="js/GenerateCurves.js"></script>
-		<script src="js/AddObject.js"></script>
-		<script src="js/Settings.js"></script> 
-		<script src="js/setup.js"></script>
-		<div id='data'></div>
-		<div id = 'UI'>
-			<p>Render Settings:</p>
-			<label for="Material">Material Type:</label>
-			<div class="btn-group btn-group-toggle" data-toggle="buttons">
-				<label class="btn btn-secondary active" id = "phong">
-					<input type="radio" name="options" id="option1" autocomplete="off" checked> Phong
-				</label>
-				<label class="btn btn-secondary" id = "basic">
-					<input type="radio" name="options" id="option2" autocomplete="off"> Basic
-				</label>
-				<label class="btn btn-secondary" id = "lam" >
-					<input type="radio" name="options" id="option3" autocomplete="off"> Lambert
-				</label>
-			</div>
-			<label for="TText">Transparency:  </label>
-			<form class="range-field">
-				<input id="TText" class="no-border" type="range" value="50" min="0" max="100" />
-			</form>
-			<label for="HText">Color:  </label>
-			<form class="range-field">
-				<input id="HText" class="no-border" type="range" value="50" min="0" max="100" />
-			</form>
-			<label for="LText">Light Location:  </label>
-			<form class="range-field">
-				<input id="LText" class="no-border" type="range" value="0" min="-10" max="10" />
-			</form>
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" value="" id="texture">
-				<label class="form-check-label" for="texture">
-					Load Textures:
-				</label>
-			</div>
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" value="" id="shadow">
-				<label class="form-check-label" for="shadow">
-					Cast Shadows:
-				</label>
-			</div>
-			<div class="form-check">
-				<input class="form-check-input" type="checkbox" value="" id="reflect">
-				<label class="form-check-label" for="reflect">
-					Reflective:
-				</label>
-			</div>
-			<button type="button" class="btn btn-primary btn-lg btn-block" id="reset">Reset Position</button>
-			<div role="status" id = "loading">
-				<span class="sr-only">Loading...</span>
-			</div>
-			<div id= 'console' >test</div>
-		</div>
-		<script>
-			//Transparency
-			var num = 50;
-			//Hue
-			var num2 = 50;
-			//Light
-			var num3 = 50;
-			
-			$(UI).innerHeight(window.innerHeight);
-			$(UI).innerWidth(window.innerWidth/5);
-			
-			//Material
-			var PMesh = $("#phong");
-			PMesh.on("click", function(e) {
-				surf1.material(0);
-			})
-			var BMesh = $("#basic");
-			BMesh.on("click", function(e) {
-				surf1.material(1);
-			})
-			var LMesh = $("#lam");
-			LMesh.on("click", function(e) {
-				surf1.material(2);
-			})
-			//Transparency
-			var Tslider = $("#TText");
-			Tslider.on("input change", function(e) {
-				num = $(this).val();
-				surf1.transparency(num/100); 
-			})
-			//Hue
-			var Hslider = $("#HText");
-			Hslider.on("input change", function(e) {
-				num2 = $(this).val();
-				surf1.color(num2/100);
-			})
-			//Light
-			var Lslider = $("#LText");
-			Lslider.on("input change", function(e) {
-				num3 = $(this).val();
-				Light(num3);
-			})
-			//Texture
-			var Txture = $("#texture");
-			var txtBool = false;
-			Txture.change(function(e) {
-				txtBool = !txtBool;
-				surf1.texture(txtBool);
-			})
-			//Shadow
-			var Shad = $("#shadow");
-			var shadBool = false;
-			Shad.change(function(e) {
-				shadBool = !shadBool;
-				surf1.shadow(shadBool);
-			})
-			//Reflective
-			var Reflex = $("#reflect");
-			var reBool = false;
-			Reflex.change(function(e) {
-				reBool = !reBool;
-				surf1.reflective(reBool, scene);
-			})
-			//reset
-			var Reset = $("#reset");
-			Reset.click(function(e) {
-				console.log("click");
-				surf1.position(0,0,0);
-			})
-		</script>
-	</body>
+
+<head>
+
+  <title>Davim - Web-based Flow Visualization</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/journal/bootstrap.min.css"> -->
+
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/flatly/bootstrap.min.css">-->
+  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/sandstone/bootstrap.min.css"> -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/lumen/bootstrap.min.css">
+
+  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/yeti/bootstrap.min.css"> -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+
+  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+  <script type="text/javascript" src="js/three.min.js"></script>
+  <script src="http://d3js.org/d3.v5.min.js"></script>
+
+  <script src="js/stats.min.js"></script>
+  <script src="js/dat.gui.min.js"></script>
+  <script src="js/Detector.js"></script>
+  <script src="js/OrbitControls.js"></script>
+  <script src="js/TrackballControls.js"></script>
+  <script src="js/OBJLoader.js"></script>
+  <!-- <script src="MTLLoader.js"></script> -->
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <script src="js/app.js"></script>
+
+  <script src="js/DavimWebFlowVis.js"></script>
+
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Features</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">About</a>
+        </li>
+      </ul>
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search">
+        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row ">
+
+      <div class="col">
+        <h1 class="page-header">Web-based Flow Visualization</h1>
+        <hr>
+      </div>
+
+
+    </div>
+    <div class="row ml-1 ">
+
+
+      <div class="col-sm-8 ">
+
+        <div class="row">
+          <div class="col-sm-8">
+            <div class="row">
+              <div id="surface_view"></div>
+            </div>
+
+            <div class="row">
+              <div id="d3-test"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-sm-4">
+        <ul class="nav nav-tabs">
+          <li class="nav-item active">
+            <a class="nav-link" data-toggle="tab" href="#home">Source</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " data-toggle="tab" href="#profile">Filters</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " href="#">Rendering</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
+              aria-expanded="false">Others</a>
+            <div class="dropdown-menu" x-placement="bottom-start"
+              style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 42px, 0px);">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Separated link</a>
+            </div>
+          </li>
+        </ul>
+        <div id="myTabContent" class="tab-content">
+          <div class="tab-pane fade active show" id="home">
+            <fieldset>
+              <legend>Select Data Source</legend>
+              <div class="form-group">
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="">
+                  <label class="custom-control-label" for="customRadio1">Toggle this custom radio</label>
+                </div>
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
+                  <label class="custom-control-label" for="customRadio2">Or toggle this other custom radio</label>
+                </div>
+                <div class="custom-control custom-radio">
+                  <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input" disabled="">
+                  <label class="custom-control-label" for="customRadio3">Disabled custom radio</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck1" checked="">
+                  <label class="custom-control-label" for="customCheck1">Check this custom checkbox</label>
+                </div>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                  <label class="custom-control-label" for="customCheck2">Disabled custom checkbox</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="customSwitch1" checked="">
+                  <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
+                </div>
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" disabled="" id="customSwitch2">
+                  <label class="custom-control-label" for="customSwitch2">Disabled switch element</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <select class="custom-select">
+                  <option selected="">Open this select menu</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <div class="input-group mb-3">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="inputGroupFile02">
+                    <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                  </div>
+                  <div class="input-group-append">
+                    <span class="input-group-text" id="">Upload</span>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="tab-pane fade " id="profile">
+            <div class="progress">
+              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
+                aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50"
+                aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75"
+                aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <div class="progress">
+              <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100"
+                aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="dropdown1">
+            <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro
+              fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone
+              skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR banksy irony. Leggings
+              gentrify squid 8-bit cred pitchfork.</p>
+          </div>
+          <div class="tab-pane fade" id="dropdown2">
+            <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master
+              cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party
+              locavore wolf cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR, banh mi before they
+              sold out farm-to-table VHS viral locavore cosby sweater.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</body>
+
 </html>
