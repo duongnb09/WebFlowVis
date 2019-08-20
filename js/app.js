@@ -1,9 +1,13 @@
+const nodes = [];
+const links = [];
 
 $(document).ready(function () {
 // set up SVG for D3
 const width = 920;
 const height = 250;
 const colors = d3.scaleOrdinal(d3.schemeCategory10);
+
+let lastNodeId = 2;
 
 const svg = d3.select('#d3-test')
   .append('svg')
@@ -15,23 +19,13 @@ const svg = d3.select('#d3-test')
 //  - nodes are known by 'id', not by index in array.
 //  - reflexive edges are indicated on the node (as a bold black circle).
 //  - links are always source < target; edge directions are set by 'left' and 'right'.
-const nodes = [
-  { id: 0, reflexive: false },
-  { id: 1, reflexive: true },
-  { id: 2, reflexive: false }
-];
-let lastNodeId = 2;
-const links = [
-  { source: nodes[0], target: nodes[1], left: false, right: true },
-  { source: nodes[1], target: nodes[2], left: false, right: true }
-];
 
 // init D3 force layout
 const force = d3.forceSimulation()
   .force('link', d3.forceLink().id((d) => d.id).distance(150))
   .force('charge', d3.forceManyBody().strength(-500))
-  .force('x', d3.forceX(width / 2))
-  .force('y', d3.forceY(height / 2))
+  .force('x', d3.forceX(width / 4))
+  .force('y', d3.forceY(height / 4))
   .on('tick', tick);
 
 // init D3 drag support

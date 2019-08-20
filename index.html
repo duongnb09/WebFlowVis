@@ -7,24 +7,14 @@
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/journal/bootstrap.min.css"> -->
-
-  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/flatly/bootstrap.min.css">-->
-  <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/sandstone/bootstrap.min.css"> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/lumen/bootstrap.min.css">
-
-  <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.3.1/yeti/bootstrap.min.css"> -->
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
-
-  <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
 
   <script type="text/javascript" src="js/three.min.js"></script>
-  <script src="http://d3js.org/d3.v5.min.js"></script>
+  <script src="js/d3.min.js"></script>
 
   <script src="js/stats.min.js"></script>
   <script src="js/dat.gui.min.js"></script>
@@ -32,11 +22,9 @@
   <script src="js/OrbitControls.js"></script>
   <script src="js/TrackballControls.js"></script>
   <script src="js/OBJLoader.js"></script>
-  <!-- <script src="MTLLoader.js"></script> -->
+  <script src="js/VTKLoader.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css">
-  <script src="js/app.js"></script>
 
-  <script src="js/DavimWebFlowVis.js"></script>
 
 
 </head>
@@ -56,7 +44,7 @@
           <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Features</a>
+          <a class="nav-link" href="js/out/index.html">Features</a>
         </li>
 
         <li class="nav-item">
@@ -74,7 +62,7 @@
     <div class="row ">
 
       <div class="col">
-        <h1 class="page-header">Web-based Flow Visualization</h1>
+        <h1 class="page-header">Web-based Flow Visualization *test</h1>
         <hr>
       </div>
 
@@ -88,17 +76,19 @@
         <div class="row">
           <div class="col-sm-8">
             <div class="row">
+			  <div id="localGUI"></div>
               <div id="surface_view"></div>
             </div>
 
             <div class="row">
-              <div id="d3-test"></div>
+				<div id="d3-test2"></div>
             </div>
           </div>
 
         </div>
       </div>
 
+	
       <div class="col-sm-4">
         <ul class="nav nav-tabs">
           <li class="nav-item active">
@@ -108,7 +98,7 @@
             <a class="nav-link " data-toggle="tab" href="#profile">Filters</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link " href="#">Rendering</a>
+            <a class="nav-link " data-toggle="tab" href="#render">Rendering</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true"
@@ -126,78 +116,71 @@
         <div id="myTabContent" class="tab-content">
           <div class="tab-pane fade active show" id="home">
             <fieldset>
-              <legend>Select Data Source</legend>
+              <legend>Select Data View</legend>
               <div class="form-group">
-                <div class="custom-control custom-radio">
-                  <input type="radio" id="customRadio1" name="customRadio" class="custom-control-input" checked="">
-                  <label class="custom-control-label" for="customRadio1">Toggle this custom radio</label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input type="radio" id="customRadio2" name="customRadio" class="custom-control-input">
-                  <label class="custom-control-label" for="customRadio2">Or toggle this other custom radio</label>
-                </div>
-                <div class="custom-control custom-radio">
-                  <input type="radio" id="customRadio3" name="customRadio" class="custom-control-input" disabled="">
-                  <label class="custom-control-label" for="customRadio3">Disabled custom radio</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="customCheck1" checked="">
-                  <label class="custom-control-label" for="customCheck1">Check this custom checkbox</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
-                  <label class="custom-control-label" for="customCheck2">Disabled custom checkbox</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="customSwitch1" checked="">
-                  <label class="custom-control-label" for="customSwitch1">Toggle this switch element</label>
-                </div>
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" disabled="" id="customSwitch2">
-                  <label class="custom-control-label" for="customSwitch2">Disabled switch element</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <select class="custom-select">
-                  <option selected="">Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                <select class="custom-select" onchange = switchViews()>
+                  <option selected="">Surface Rendering</option>
+                  <option value="1">Volume Rendering</option>
                 </select>
               </div>
+			  <legend>Load Data</legend>
               <div class="form-group">
                 <div class="input-group mb-3">
                   <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="inputGroupFile02">
-                    <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                    <input type="file" class="custom-file-input" id="input" onchange = "loadLocal(event)">
+                    <label class="custom-file-label text-truncate" for="input" id = "inputName" >Choose file</label>
                   </div>
                   <div class="input-group-append">
-                    <span class="input-group-text" id="">Upload</span>
+                    <button class="btn btn-secondary" type="button" id="inputGroupFi" onclick="readLocal()">Upload</button>
                   </div>
                 </div>
               </div>
             </fieldset>
           </div>
           <div class="tab-pane fade " id="profile">
-            <div class="progress">
-              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
-                aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="progress">
-              <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50"
-                aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="progress">
-              <div class="progress-bar bg-warning" role="progressbar" style="width: 75%" aria-valuenow="75"
-                aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-            <div class="progress">
-              <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100"
-                aria-valuemin="0" aria-valuemax="100"></div>
+			<legend>Object Options</legend>
+			<div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="recvShadow" onchange="allRecvShad()">
+                <label class="custom-control-label" for="recvShadow">All objects Recieve Shadows</label>
+              </div>
+			  <div class="form-group">
+				<label class="form-group-label" for="materialChanger">Change all Materials to:</label>
+                <select class="custom-select" id="materialChanger" onchange = "allMaterial(value)">
+                  <option value="0" selected="">Phong</option>
+                  <option value="1">Basic</option>
+				  <option value="2">Lambert</option>
+                </select>
+              </div>
+			  <label for="opacityChanger">Opacity for all (0-100%)</label>
+			  <input type="range" class="custom-range" min="0" max="100" id="opacityChanger" onchange="allOpacity(value)">
+			  <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="reflect" onchange="allReflective()">
+                <label class="custom-control-label" for="reflect">Make all objects Reflective</label>
+              </div>
+			<div class="dropdown">
+				<a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuHiddenObj" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick = "hiddenObjectList()">
+				Hidden Objects
+				</a>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuHiddenObj" id="hiddenObjects">
+					<a class="dropdown-item" href="#">Action</a>
+				</div>
+			</div>
+          </div>
+		  <div class="tab-pane fade" id="render">
+            <legend>Scene Options</legend>
+            <div class="form-group">
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="shadowSwitch" onchange="shadowsOnOff()">
+                <label class="custom-control-label" for="shadowSwitch">Turn on Shadows</label>
+              </div>
+			  <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="skySwitch" onchange="skyboxOnOff()">
+                <label class="custom-control-label" for="skySwitch">Load Skybox (Reflective)</label>
+              </div>
+              <button class="btn btn-secondary" type="button" id="unhideCurveSwitch" onclick="unhideCurves()">Unhide Seeding Curves</button>
+			  <button class="btn btn-secondary" type="button" id="unhideSurfaceSwitch" onclick="unhideSurface()">Unhide Surfaces</button>
+			  <button class="btn btn-secondary" type="button" id="hideCurveSwitch" onclick="hideCurves()">Hide Seeding Curves</button>
+			  <button class="btn btn-secondary" type="button" id="hideSurfaceSwitch" onclick="hideSurface()">Hide Surfaces</button>
             </div>
           </div>
           <div class="tab-pane fade" id="dropdown1">
@@ -213,9 +196,16 @@
               sold out farm-to-table VHS viral locavore cosby sweater.</p>
           </div>
         </div>
-      </div>
-
-    </div>
+	</div> 
+   	 	<!-- Main Scripts -->
+	<script src="js/Object.js"></script> 
+	<script src="js/GenerateCurves.js"></script>
+	<script src="js/TACLines.js"></script>
+	<script src="js/AddObject.js"></script>
+	<script type="module"  src="js/AddNRRDVolume.js"></script>
+	<script src="js/GUI.js"></script>
+	<script type="module" src="js/setup.js"></script>
+   </div>
   </div>
 
 
