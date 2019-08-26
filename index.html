@@ -62,7 +62,7 @@
     <div class="row ">
 
       <div class="col">
-        <h1 class="page-header">Web-based Flow Visualization *test</h1>
+        <h1 class="page-header">Web-based Flow Visualization</h1>
         <hr>
       </div>
 
@@ -72,7 +72,7 @@
 
 
       <div class="col-sm-8 ">
-
+		<button class="btn btn-secondary" type="button" id="deleter" onclick="deleteButton()" style = "position:absolute;right:20px;top:5px;z-index:200;display:none">Delete Object</button>
         <div class="row">
           <div class="col-sm-8">
             <div class="row">
@@ -127,11 +127,11 @@
               <div class="form-group">
                 <div class="input-group mb-3">
                   <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="input" onchange = "loadLocal(event)">
+                    <input type="file" class="custom-file-input" id="input">
                     <label class="custom-file-label text-truncate" for="input" id = "inputName" >Choose file</label>
                   </div>
                   <div class="input-group-append">
-                    <button class="btn btn-secondary" type="button" id="inputGroupFi" onclick="readLocal()">Upload</button>
+                    <button class="btn btn-secondary" type="button" id="inputGroupFi">Upload</button>
                   </div>
                 </div>
               </div>
@@ -181,6 +181,7 @@
 			  <button class="btn btn-secondary" type="button" id="unhideSurfaceSwitch" onclick="unhideSurface()">Unhide Surfaces</button>
 			  <button class="btn btn-secondary" type="button" id="hideCurveSwitch" onclick="hideCurves()">Hide Seeding Curves</button>
 			  <button class="btn btn-secondary" type="button" id="hideSurfaceSwitch" onclick="hideSurface()">Hide Surfaces</button>
+			  <button class="btn btn-secondary" type="button" id="bgColorSwitch" onclick="invertBackground()">Invert Color Background</button>
             </div>
           </div>
           <div class="tab-pane fade" id="dropdown1">
@@ -203,7 +204,9 @@
 	<script src="js/TACLines.js"></script>
 	<script src="js/AddObject.js"></script>
 	<script type="module"  src="js/AddNRRDVolume.js"></script>
+	<script type="module"  src="js/AddVTKVolume.js"></script>
 	<script src="js/GUI.js"></script>
+	<script type="module" src="js/LocalImport.js"></script>
 	<script type="module" src="js/setup.js"></script>
    </div>
   </div>

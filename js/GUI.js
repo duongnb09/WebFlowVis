@@ -1,10 +1,12 @@
-var loading = false;
-var sceneCheck = true;
-var allParams = {
+var loading = false; //boolean for loading icon to appear or not
+var sceneCheck = true;  //boolean to tell whether current scene is surface rendering or volume rendering
+var allParams = { //GUI parameters for the "Change all object settings" options in the Filters tab
 	opacity: 50,
 	reflective: false,
 	recvShadows: false
 };
+
+//Instanciated variables for this script and setup.js
 var currObject;
 var cameraH;
 var camera;
@@ -15,50 +17,7 @@ var scene;
 var sceneH;
 var mouse = new THREE.Vector2(), INTERSECTED;
 
-// Input Function
 var fileStorage;
-function loadLocal(evt){
-	fileStorage = evt.target.files;
-	console.log(fileStorage[0]);
-	document.getElementById("inputName").innerHTML = fileStorage[0].name;
-}
-function readLocal(){
-	var currScene;
-	if(sceneCheck){
-		currScene = scene;
-	}
-	else{
-		currScene = sceneH;
-	}
-	var filetype = $(document.getElementById("input")).val().split('.').slice(-1)[0];
-	
-	var reader = new FileReader();
-    reader.onload = (function(theFile) {
-        return function(e) {
-			if(filetype == "txt"){
-				GenerateCurves(e.target.result, currScene, true);
-			}
-			else if(filetype == "obj"){
-				AddObject(e.target.result, currScene, true);
-			}
-			else if(filetype == "nrrd"){
-				
-			}
-			else if(filetype == "vtk"){
-				AddVTKVolume(e.target.result, currScene, true);
-			}
-			else{
-				alert("Error: Bad File Type");
-			};	
-        };
-      })(fileStorage[0]);
-	  if(filetype == "txt"){
-		reader.readAsText(fileStorage[0]);
-	  }
-	  else{
-		reader.readAsDataURL(fileStorage[0]);
-	  }
-}
 
   // Skybox Cube
   var path = "data/skybox/";
@@ -185,6 +144,19 @@ textureCube.format = THREE.RGBFormat;
 			}
 		}
   }
+  function invertBackground(){
+	  var tempScene = scene;
+	  if(!sceneCheck){
+		  tempScene = sceneH;
+	  }
+	  if(tempScene.background.r == 1){
+		  tempScene.background = new THREE.Color('black');
+	  }
+	  else{
+		  tempScene.background = new THREE.Color('white');
+	  }
+  }
+  //List of Hidden Objects in Scene GUI
   var dropdownOn = false;
   function hiddenObjectList(){
 	  if(document.getElementById("dropdownMenuHiddenObj").getAttribute("aria-expanded") == "false"){
@@ -251,4 +223,14 @@ textureCube.format = THREE.RGBFormat;
 	e.appendChild(tempDiv);
 	dropdown = false;
   }
-  
+  //Deletes an object from the visualizer
+  function deleteButton(){
+	  if(sceneCheck){
+		currObject.remove(scene);
+	  }
+	  else{
+		currObject.remove(sceneH);
+	  }
+	  currObject = null;
+	  document.getElementById("deleter").style.display = "none";
+  }

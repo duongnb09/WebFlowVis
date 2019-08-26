@@ -6,6 +6,12 @@ var surfaceObjects = [];
 var vObjects = [];
 //Holds the current SRObjects in the Surface volume scene
 var volumeObjects = [];
+// Colormap textures
+var cmtextures = {
+    Viridis: new THREE.TextureLoader().load( 'data/cm_viridis.png', render ),
+    ColdHot: new THREE.TextureLoader().load( 'data/cm_ColdHot.png', render ),
+	BlueWhiteRed: new THREE.TextureLoader().load( 'data/cm_BWR.png', render ),
+};
 /** 
 * @class SRObject
 * @classdesc This is the type in which all scene objects fall under other than the scene and the camera. This is a base class, so you will not need to construct an object as an SRObject. Instead, utilize the constructors with the children classes. 
@@ -84,17 +90,17 @@ class SRObject{
 		
 		//Position folder
 		var posMenu = this.surfaceLocalMenu.addFolder("Position");
-		var posXCntrlr = posMenu.add(this.posParams, 'X', -5 , 5);
+		var posXCntrlr = posMenu.add(this.posParams, 'X', -50 , 50);
 		posXCntrlr.onChange(function(value) {
 			var currPos  = objEditor.Position;
 			objEditor.position(value, currPos.y, currPos.z);
 		});
-		var posYCntrlr = posMenu.add(this.posParams, 'Y', -5 , 5);
+		var posYCntrlr = posMenu.add(this.posParams, 'Y', -50 , 50);
 		posYCntrlr.onChange(function(value) {
 			var currPos  = objEditor.Position;
 			objEditor.position(currPos.x, value, currPos.z);
 		});
-		var posZCntrlr = posMenu.add(this.posParams, 'Z', -5 , 5);
+		var posZCntrlr = posMenu.add(this.posParams, 'Z', -50 , 50);
 		posZCntrlr.onChange(function(value) {
 			var currPos  = objEditor.Position;
 			objEditor.position(currPos.x, currPos.y, value);
@@ -152,7 +158,28 @@ class SRObject{
 	get Rotation(){
 		return this.object.rotation;
 	}
-	loadSettings(){
+	/**
+	* Removes the object from the scene and destroys it
+	* @param {THREE.Scene} sceneLoc - The current scene in the view
+	* 
+	*/
+	remove(sceneLoc){
+		this.removeMenu();
+		console.log(sceneLoc.children.length);
+		for(var a=0; a < sceneLoc.children.length; a++){
+			if(this.object.name == sceneLoc.children[a].name){
+				sceneLoc.remove(this.object);
+				break;
+			}
+		}
+		if(!(this instanceof SRVolume)){
+			for(var b=0; b < objects.length; b++){
+				if(this.object.name == objects[b].name){
+					objects.splice(b,1);
+					surfaceObjects.splice(b,1);
+				}
+			}
+		}
 	}
 }
 /**
@@ -247,7 +274,7 @@ class SRMesh extends SRObject{
 			Recieve_Shadows: false,
 			Textured: false,
 			Reflective: false,
-			Flip_Normals: false,
+			Surface_Render_Side: 'BackSide',
 			Hide: false
 		};
 		var newName;
@@ -276,21 +303,19 @@ class SRMesh extends SRObject{
 			this.generate2DNode();
 		}
 	}
-	add(newobject){
-		
-	}
 	/**
 	* Changes the hue color of the mesh. On a scale of 0-1.
-	* @params {double} hue - value of hue.
 	* @params {string} hue - direct color for object.
 	*/
 	color(hue){
-		if (typeof(hue) == 'number'){
-			this.mat.color.setHSL(hue/100, 1, .5);
-		}
-		else{
-			this.mat.color.setStyle(hue);
-		};
+		this.mat.color.setStyle(hue);
+	}
+/**
+	* Changes the size of the mesh. On a scale of 1-100 times original size.
+	* @params {string} val - new scale size.
+	*/
+	scale(val){
+		this.geo.scale(val,val,val);
 	}
 	/**
 	* Changes the material of the Mesh object.
@@ -357,16 +382,20 @@ class SRMesh extends SRObject{
 			}
 	}
 	/**
-	* Flips the normals of the surface display.
-	* @params {bool} onoff - On = true, Off = false
+	* Changes which side of a surface is displayed.
+	* @params {string} side - Name of new side to be rendered to.
 	*/
-	flipNormals(onoff){
-			if(onoff){
+	surfaceRenderSide(side){
+			if(side == "FrontSide"){
 				this.mat.side = THREE.FrontSide;
 				this.mat.needsUpdate = true;
 			}
-			else{
+			else if(side == "BackSide"){
 				this.mat.side = THREE.BackSide;
+				this.mat.needsUpdate = true;
+			}
+			else{
+				this.mat.side = THREE.DoubleSide;
 				this.mat.needsUpdate = true;
 			}
 	}
@@ -390,10 +419,19 @@ class SRMesh extends SRObject{
 		this.object.receiveShadow = mesh.receiveShadow;
 		this.object.name = mesh.name;
 		this.origColor = "#" + mesh.material.color.getHexString();
+		this.objParams.Color = "#" + mesh.material.color.getHexString();
 		sceneName.add(this.object);
-		objects.push(this.object);
-		surfaceObjects.push(this);
 		this.generate2DNode();
+		if(!sceneCheck){
+			this.scale(32);
+			vObjects.push(this.object);
+			volumeObjects.push(this);
+			this.geo.translate(32.5,32.5,0);
+		}
+		else{
+			objects.push(this.object);
+			surfaceObjects.push(this);
+		}
 	};
 	/**
 	* Allows a local menu to show on the screen when the object is clicked on
@@ -406,8 +444,9 @@ class SRMesh extends SRObject{
 		opacityCntrlr.onChange(function(value) {
 			objEditor.transparency(value);
 		});
-		var colorCntrlr = objMenu.add(this.objParams, 'Color', 0 , 100);
+		var colorCntrlr = objMenu.addColor(this.objParams, 'Color');
 		colorCntrlr.onChange(function(value) {
+			console.log(value);
 			objEditor.color(value);
 			objEditor.origColor = "#" + objEditor.mat.color.getHexString();
 			if(document.getElementById(objEditor.object.name) != null){
@@ -447,9 +486,9 @@ class SRMesh extends SRObject{
 			textureCube.format = THREE.RGBFormat;
 			objEditor.reflective(value, textureCube);
 		});
-		var normCntrlr = objMenu.add(this.objParams, 'Flip_Normals');
+		var normCntrlr = objMenu.add(this.objParams, 'Surface_Render_Side', ['FrontSide','BackSide','DoubleSide']);
 		normCntrlr.onChange(function(value) {
-			objEditor.flipNormals(value);
+			objEditor.surfaceRenderSide(value);
 		});
 		var hideCntrlr = objMenu.add(this.objParams, 'Hide');
 		hideCntrlr.onChange(function(value) {
@@ -482,15 +521,46 @@ class SRMesh extends SRObject{
 	}
 }
 /**
-* These objects were going to be a wireframe representation to help visually span the area that all of the objects on the scene would take up. I was not able to implement this object yet.
+* These objects were going to be a wireframe representation to help visually span the area that all of the objects on the scene would take up.
 * @extends SRObject
 */
-class SRBoundingBox extends SRObject{
+class SRBoundingBox extends SRMesh{
+	dimension;
+	/**
+	* Adds an bounding box to your scene.
+	* @constructor
+	* @params {THREE.Scene} scene - Scene you would like to add an object to.
+	*/
 	constructor(sceneName){
 		super(sceneName);
+		this.dimension = new THREE.Vector3(10, 5, 10);
+		var tempGeo = new THREE.BoxGeometry( 10, 5, 10);
+		this.geo = new THREE.EdgesGeometry( tempGeo );
+		this.mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2 } );
+		this.object = new THREE.LineSegments( this.geo, this.mat );
+		this.object.name = "BoundingBox";
+		sceneName.add(this.object);
+		if(!sceneCheck){
+			this.scale(32);
+			vObjects.push(this.object);
+			volumeObjects.push(this);
+			this.geo.translate(32.5,32.5,0);
+		}
+		else{
+			objects.push(this.object);
+			surfaceObjects.push(this);
+		}
 	}
-	Resize(){
-		
+	/**
+	* Resizes the box as needed
+	* @params {THREE.Vector3} newSize - 3 dimensional space that the new Bounding box will take up.
+	*/
+	resize(newSize){
+		this.dimension = newSize;
+		var tempGeo = new THREE.BoxGeometry( newSize.x, newSize.y, newSize.z);
+		this.geo = new THREE.EdgesGeometry( tempGeo );
+		this.object.geometry = this.geo;
+		this.position(newSize.x/2, newSize.y/2, newSize.z/2);
 	}
 }
 /**
@@ -517,8 +587,6 @@ class SRSeedingCurve extends SRMesh{
 	* @constructor
 	* @params {THREE.Scene} scene - Scene you would like to add an object to.
 	*/
-	dataOne;
-	dataTwo;
 	constructor(filename, sceneName){
 		super(sceneName);
 		this.dataOne = [];
@@ -542,6 +610,8 @@ class SRSeedingCurve extends SRMesh{
 			this.dataTwo.push(data[a]);
 		}
 	};
+	dataOne;
+	dataTwo;
 }
 /**
 * SRVolume is used to load in .nrrd files into your scene.
@@ -553,10 +623,9 @@ class SRVolume extends SRMesh{
 	* @constructor
 	* @params {THREE.Scene} scene - Scene you would like to add an object to.
 	*/
-	volConfig;
 	constructor(sceneName){
 		super(sceneName);
-		this.volConfig = { clim1: 0, clim2: 1 };
+		this.volConfig = { clim1: 0, clim2: 1, color_map: "Viridis" };
 	}
 		/**
 	* Updates the geometry of the object. Used with the sub classes to load in the data properly.
@@ -575,7 +644,29 @@ class SRVolume extends SRMesh{
 		volumeObjects.push(this);
 		this.generate2DNode();
 	};
-	
+	/**
+	* Used to change the color mapping of the object.
+	* @params {String} value - name of new color map.
+	*/
+	colorMap(value){
+		if(value == 'Viridis'){
+			this.mat.uniforms["u_cmdata"] = cmtextures.Viridis;
+			console.log("v");
+		}
+		else if (value == 'ColdHot'){
+			this.mat.uniforms["u_cmdata"] = cmtextures.ColdHot;
+			console.log("c");
+		}
+		else{
+			this.mat.uniforms["u_cmdata"] = cmtextures.BlueWhiteRed;
+			console.log("b");
+		}
+		this.mat.needsUpdate = true;
+	};
+	/**
+	* Allows a local menu to show on the screen when the object is clicked on
+	* @params {domElement} mesh - new mesh information to adapt to object.
+	*/
 	getGUIMenu() {
 		var objMenu = super.getGUIMenu();
 		var volObject = this;
@@ -587,6 +678,25 @@ class SRVolume extends SRMesh{
 		c2Control.onChange( function(value){
 			volObject.mat.uniforms[ "u_clim" ].value.set( volObject.volConfig.clim1 , value);
 		});
+		var cmCntrlr = objMenu.add(this.volConfig, 'color_map', ['Viridis','ColdHot','BlueWhiteRed']);
+		cmCntrlr.onChange(function(value) {
+			volObject.colorMap(value);
+		});
 		return this.surfaceLocalMenu;
 	}
+	/**
+	* Removes the object from the scene and destroys it
+	* @param {THREE.Scene} sceneLoc - The current scene in the view
+	* 
+	*/
+	remove(sceneLoc){
+		super.remove(sceneLoc);
+		for(var b=0; b < vObjects.length; b++){
+			if(this.object.name == vObjects[b].name){
+				vObjects.splice(b,1);
+				volumeObjects.splice(b,1);
+			}
+		}
+	}
+	volConfig;
 }

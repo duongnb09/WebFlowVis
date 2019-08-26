@@ -1,3 +1,11 @@
+import {AddVolume} from "./AddNRRDVolume.js";
+import {AddVTKVolume} from "./AddVTKVolume.js";
+
+//Load file setup
+$("#input").change(loadLocal);
+$("#inputGroupFi").click(readLocal);
+import {loadLocal} from "./LocalImport.js";
+import {readLocal} from "./LocalImport.js";
 
 //-----Three.js Setup-----//
 var container = document.createElement( 'div' );
@@ -62,14 +70,6 @@ camera2.up = camera.up;
 var axesHelper = new THREE.AxesHelper( 5 );
 scene2.add( axesHelper );*/
 
-//box
-var geometry = new THREE.BoxGeometry( 10, 5, 10);
-var edge = new THREE.EdgesGeometry( geometry );
-var mat = new THREE.LineBasicMaterial( { color: 0x000000, linewidth: 2 } );
-var wireframe = new THREE.LineSegments( edge, mat );
-wireframe.name = "plane";
-scene.add( wireframe );
-
 //lights
 var light = new SRLight(scene);
 var light2 = new SRLight(scene);
@@ -83,8 +83,8 @@ light4.position(0,-10,10);
 //objects
 GenerateTACLines("data/pathlines.txt","data/tacs.txt", scene, new SRMesh(scene, "Sphere"));
 
-import {AddVolume} from "./AddNRRDVolume.js";
-AddVolume("data/stent.nrrd", "data/cm_viridis.png", sceneH);
+AddVTKVolume('data/volume.vtk', sceneH);
+var BB = new SRBoundingBox(sceneH);
 
 //shadow plane
 var shadowPlane = new SRMesh(scene);
@@ -101,10 +101,10 @@ var canvasBounds = renderer.context.canvas.getBoundingClientRect();
 
     mouse.x = ((event.clientX - canvasBounds.left) / (canvasBounds.right - canvasBounds.left)) * 2 - 1;
     mouse.y = - ((event.clientY - canvasBounds.top) / (canvasBounds.bottom - canvasBounds.top)) * 2 + 1;
-
+	
 	if(sceneCheck){
 		raycaster.setFromCamera(mouse, camera);
-		var intersects = raycaster.intersectObjects(objects, true);
+		intersects = raycaster.intersectObjects(objects, true);
 		if (intersects.length > 0) {
 			if (INTERSECTED != intersects[0].object) {
 				INTERSECTED = intersects[0].object;
@@ -161,8 +161,10 @@ var canvasBounds = renderer.context.canvas.getBoundingClientRect();
 					surfaceObjects[b].color(surfaceObjects[b].origColor);
 				}
 			}
-			currObject.removeMenu();
-			currObject = null;
+			if(currObject != null){
+				currObject.removeMenu();
+				currObject = null;
+			}
 			d3.selectAll("path").classed("line", function() {
 				d3.select(this)
 				.attr('stroke', null)
@@ -210,12 +212,19 @@ var canvasBounds = renderer.context.canvas.getBoundingClientRect();
 		}
 		else {
 			INTERSECTED = null;
-			currObject.removeMenu();
-			currObject = null;
+			if(currObject != null){
+				currObject.removeMenu();
+				currObject = null;
+			}
 			selectMode = false;
 		}
 	}
-
+	if(currObject == null){
+		document.getElementById("deleter").style.display = "none";
+	}
+	else{
+		document.getElementById("deleter").style.display = "block";
+	}
   }
 
 function animate() {
