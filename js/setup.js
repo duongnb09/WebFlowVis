@@ -85,6 +85,7 @@ GenerateTACLines("data/pathlines.txt","data/tacs.txt", scene, new SRMesh(scene, 
 
 AddVTKVolume('data/volume.vtk', sceneH);
 var BB = new SRBoundingBox(sceneH);
+var readySwitch = true;
 
 //shadow plane
 var shadowPlane = new SRMesh(scene);
@@ -233,6 +234,11 @@ function animate() {
 	}
 	else{
 		$("#loading").removeClass('spinner-border');
+	}
+	if(vObjects.length == 1 & readySwitch){
+		switchViews();
+		AddObject('data/surface.obj', sceneH);
+		readySwitch = false;
 	}
 	requestAnimationFrame( animate );
 	controls.update();
